@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import java.security.InvalidParameterException;
 
-public class OperationSpec {
+public class OperationTest {
 
     private static User user;
     BankAccount account1 = new BankAccount();
