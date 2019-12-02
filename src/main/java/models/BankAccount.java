@@ -37,6 +37,10 @@ public class BankAccount {
         this.amount = amount;
     }
 
+    public UUID getAccountId() {
+        return accountId;
+    }
+
     /***
      * add each operation performed to a list of operations, needed to display operations later.
      * @param operation

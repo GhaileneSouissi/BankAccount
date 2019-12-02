@@ -9,5 +9,7 @@ package models;
 public enum Types {
     Deposit,
     Withdrawal,
-    Credit //TODO : develop credit operation
+    Credit, //TODO : develop credit operation
+    Transaction
 }
+

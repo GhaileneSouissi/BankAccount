@@ -3,8 +3,10 @@ package operations;
 import models.BankAccount;
 import models.Operation;
 import models.Types;
+import models.User;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 
 /***
@@ -22,5 +24,7 @@ public interface OperationsInterface {
     ArrayList<Operation> showHistory(BankAccount account);
 
     void createBankAccount(BankAccount account);
+
+    Boolean transaction(User user, int amount, UUID srcAccountuuid,UUID desAccountUuid);
 
 }

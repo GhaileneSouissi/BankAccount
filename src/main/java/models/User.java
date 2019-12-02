@@ -4,28 +4,32 @@ import operations.OperationsInterface;
 
 import java.security.InvalidParameterException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.UUID;
+import java.util.*;
 
 /***
  * the bank user/client
  */
-public class User implements OperationsInterface {
+public class User extends Observable implements Observer, OperationsInterface {
     //user Id
     private UUID userId;
 
     private String name;
     private String age;
     //user bank accounts, a user can have multiple bank accounts
-    private ArrayList<BankAccount> bankAccounts;
+    private Map<UUID, BankAccount> bankAccounts;
 
     //user constructor, a random uuid is given to each user
     public User(String name, String age) {
         this.userId = UUID.randomUUID();
         this.name = name;
         this.age = age;
-        this.bankAccounts = new ArrayList<>();
+        this.bankAccounts = new HashMap<>();
 
+    }
+
+
+    public Map<UUID, BankAccount> getBankAccounts() {
+        return bankAccounts;
     }
 
     /***
@@ -50,7 +54,7 @@ public class User implements OperationsInterface {
 
         int actualAmount = account.getAmount();
 
-        if (type == Types.Deposit) {
+        if (type == Types.Deposit) { //TODO : refactor needed ....
             //create a new operation, each operation has a date time (the system date time)
             Operation operation = new Operation(LocalDateTime.now(), Types.Deposit, amount);
             //add operation to the operation list, to display later the history if needed
@@ -96,9 +100,39 @@ public class User implements OperationsInterface {
      */
     public void createBankAccount(BankAccount account) {
         if (account == null) throw new InvalidParameterException("account must not be null");
-        bankAccounts.add(account);
+        bankAccounts.put(account.getAccountId(), account);
     }
 
+    @Override
+    public Boolean transaction(User user, int amount, UUID srcAccountUuid, UUID desAccountUuid) {
+        Boolean transactionStatus = false;
+        Map<UUID, BankAccount> accountMap = user.getBankAccounts();
+        if (accountMap.containsKey(desAccountUuid)) {
+            BankAccount srcAccount = this.getBankAccounts().get(srcAccountUuid);
+            BankAccount destAccount = user.getBankAccounts().get(desAccountUuid);
+
+
+            int balance = srcAccount.getAmount() - amount;
+            if (balance > 0) {
+                Operation operation = new Operation(LocalDateTime.now(), Types.Transaction, amount);
+                srcAccount.addOperations(operation);
+                srcAccount.setAmount(balance);
+
+                destAccount.addOperations(operation);
+                destAccount.setAmount(destAccount.getAmount() + amount);
+
+                transactionStatus = true;
+
+            }
+        }
+        return transactionStatus;
+    }
+
+    @Override
+    public void update(Observable o, Object user) { //TODO : implement observer
+
+        //transaction()
+    }
 
     @Override
     public boolean equals(Object o) {
